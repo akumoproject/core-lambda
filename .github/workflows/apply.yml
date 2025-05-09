@@ -1,0 +1,51 @@
+name: Terraform Plan and Apply
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target Environment (dev/shs/prod)'
+        required: true
+        type: choice
+        options:
+          - dev
+          - shs
+          - prod      
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  set-env:
+    name: Set Environment Variables
+    runs-on: ubuntu-latest
+    outputs:
+      env: ${{ steps.set.outputs.env }}
+      oidc-role: ${{ steps.set.outputs.oidc-role }}
+      repo-name: ${{ steps.extract.outputs.repo-name }}
+    steps:
+      - name: Set Variables
+        id: set
+        run: |
+          echo "env=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+          echo "oidc-role=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+
+      - name: Extract Repo Name
+        id: extract                                         
+        run: |
+          echo "repo-name=$(basename $GITHUB_REPOSITORY)" >> $GITHUB_OUTPUT
+          
+  plan-and-apply:
+    name: Terraform Plan and Apply
+    needs: set-env
+    if: github.event_name == 'workflow_dispatch'
+    uses: akumoproject/infra-shs-workflow-repo/.github/workflows/terraform-plan-apply.yml@main
+    with:
+      env: ${{ needs.set-env.outputs.env }}
+      oidc-role: ${{ needs.set-env.outputs.oidc-role }}
+      repo-name: ${{ needs.set-env.outputs.repo-name }}
+      terraform-directory: ./terraform
+      bucket-name: project11-infra-${{ needs.set-env.outputs.env }}-s3-backend
+      artifact-bucket: project11-infra-${{ needs.set-env.outputs.env }}-artifacts-s3
+    secrets: inherit
