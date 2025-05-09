@@ -40,7 +40,7 @@ jobs:
     name: Terraform Plan and Apply
     needs: set-env
     if: github.event_name == 'workflow_dispatch'
-    uses: akumoproject/infra-shs-workflow-repo/.github/workflows/terraform-plan-apply.yml@main
+    uses: akumoproject/centralized-workflows/.github/workflows/terraform-plan-apply.yml@main
     with:
       env: ${{ needs.set-env.outputs.env }}
       oidc-role: ${{ needs.set-env.outputs.oidc-role }}
