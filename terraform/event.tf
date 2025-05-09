@@ -13,6 +13,15 @@ resource "aws_iam_role" "eventbridge_invoker" {
       }
     ]
   })
+  tags = {
+    Name    = "eventbridge-invoker-role"
+    Purpose = "Trigger Lambda from EventBridge"
+    EID     = "4004"
+    Project = "project11"
+    Env     = "shs"
+    IaC     = "Terraform"
+    Ou      = "infra"
+  }
 }
 resource "aws_iam_policy" "eventbridge_lambda_invoke" {
   name = "eventbridge-invoke-lambda-policy"
@@ -27,6 +36,15 @@ resource "aws_iam_policy" "eventbridge_lambda_invoke" {
       }
     ]
   })
+  tags = {
+    Name    = "eventbridge-invoker-role"
+    Purpose = "Trigger Lambda from EventBridge"
+    EID     = "4004"
+    Project = "project11"
+    Env     = "shs"
+    IaC     = "Terraform"
+    Ou      = "infra"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "attach_eventbridge_invoke_policy" {
@@ -62,6 +80,15 @@ resource "aws_cloudwatch_event_rule" "resource_creation" {
       ]
     }
   })
+  tags = {
+    Name    = "eventbridge-invoker-role"
+    Purpose = "Trigger Lambda from EventBridge"
+    EID     = "4004"
+    Project = "project11"
+    Env     = "shs"
+    IaC     = "Terraform"
+    Ou      = "infra"
+  }
 }
 data "aws_lambda_function" "check_tags" {
   function_name = "infra-shs-demo-lambda-tag"
